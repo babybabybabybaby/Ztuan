@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style/sass/index.css">
+    <link rel="stylesheet" href="style/css/general.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 公用顶部-->
+    <div class="zc-topbar">
+        <div class="wrapper clearfix w">
+            <div class="zc-login-info">
+                <span class="zc-back-home">
+                    <a href="javascript:;">商城首页</a>
+                </span>
+                <span class="zc-login">Hi~欢迎来到Z商城，请<a href="./html/login.html" color="#f00">登录</a>
+                </span>
+                <span class="zc-register">
+                    <a href="./html/signin.html">免费注册</a>
+                </span>
+            </div>
+            <ul class="zc-quick-menu r">
+                <li><a href="javascript:;">我的订单</a></li>
+                <li class="zc-my-center" onmouseover="showUI(this)" onmouseout="hideUI(this)">
+                    <a href="javascript:;" class="zc-hd">买家中心<i class="ico"></i></a>
+                    <div class="zc-my-center-bd" id="zc-my-center-bd" style="display: none;"> <a href="#"
+                            style="display:none;">我的优惠券&nbsp;&nbsp;<em>8</em></a> <a
+                            href="javascript:;">关注的店铺&nbsp;&nbsp;<em id="focusShopNum">30</em></a> <a
+                            href="javascript:;">关注的商品&nbsp;&nbsp;<em id="focusGoodsNum">49</em></a> </div>
+                </li>
+                <li><a href="./html/cart.html" id="shop-cart-num">购物车0件</a></li>
+                <li><a href="javascript:alert('无服务');">帮助中心</a></li>
+                <li class="zc-separator">|</li>
+                <li class="zc-mobile" onmouseover="showUI(this)" onmouseout="hideUI(this)"> <a href="javascript:;"
+                        class="zc-hd zc-mobile-hd">手机商城<i class="ico"></i></a>
+                    <div class="zc-mobile-bd" id="zc-mobile-bd" style="display:none;"><img
+                            src="./resource/icons/shop_wechat.png" width="130" height="130">
+                    </div>
+                </li>
+                <li><a href="javascript:alert('系统维护中');">中关村在线</a></li>
+
+                <li><a href="javascript:alert('暂时不可用');">招商合作</a></li>
+                <li class="lianxikefu"> <a href="javascript:;" onmouseover="showUI(this)" onmouseout="hideUI(this)"
+                        class="zc-hd">联系客服<i class="ico"></i></a>
+                    <div class="zc-service-tel">010-83417888-9185</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="./lib/jquery-3.4.1.min.js"></script>
+    <script src="script/topbar.js"></script>
+    <script src="./script/banner.js"></script>
+
+    <!-- 公用头部 -->
+
+    <div class="header">
+        <div class="w clearfix">
+            <h1 class="head-logo">
+                <a href="http://tuan.zol.com/">ZOL商城</a>
+            </h1>
+            <div class="r quick-entry">
+                <a href="./html/cart.html" class="r cart">
+                    购物车
+                    <i class="ico"></i>
+                    <span class="number">0</span>
+                </a>
+                <a href="javascript:;" class="r coupon">
+                    我的优惠券
+                    <i class="ico"></i>
+                </a>
+                <a href="javascript:;" class="order r">
+                    我的订单
+                    <i class="ico"></i>
+                </a>
+            </div>
+            <div class="search-box">
+                <form action="#" method="GET">
+                    <div class="search" id="search">
+                        <input type="hidden" value="List" name="c">
+                        <input type="hidden" value="List" name="a">
+                        <input name="searchName" id="search-text" type="text" class="search-text" autocomplete="off"
+                            placeholder="找找您想要的商品" value="DIY限时抢">
+                        <input type="submit" value="搜索" class="search-btn" hidefocus="true">
+                        <!-- 热搜词 -->
+                        <ul class="search-hot-tuan clearfix">
+                            <li><a href="javascript:;">华为手机</a></li>
+                            <li><a href="javascript:;">DIY主机降1000元</a></li>
+                            <li><a href="javascript:;">畅玩7X立省130元</a></li>
+                            <li><a href="javascript:;">超极本降1400元</a></li>
+                            <li><a href="javascript:;">华为Mate 10</a></li>
+                        </ul>
+                        <!-- end -->
+                    </div>
+                </form>
+            </div>
+            <div class="notice-sign" style="padding: 30px 0 0 90px;">
+                <span class="label">公告</span>
+                客服电话：010-83417888-9185，QQ：2055103851
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================nav=================== -->
+    <div class="nav-box nav-box-with-line">
+        <div class="w" style="position: relative">
+            <ul class="one-ul">
+                <li id="list"><i class="ico"></i><a href="javascript:;">全部分类</a>
+                    <ul id="ul2">
+                        <li><i class="ico"></i><a href="javascript:;">手机</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">电脑</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">DIY</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">数码</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">外设</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">智能</a></li>
+                        <li><i class="ico"></i><a href="javascript:;">其它</a></li>
+                    </ul>
+                </li>
+                <li><a href="javascript:;">团购</a></li>
+                <li><a href="javascript:;">9块9包邮</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--========================================banner轮播-====================================-->
+    <div class="w banner-box">
+        <div class="slider">
+            <ul class="list">
+                <li><a href="#1"><img src="./resource/imgs/lunbo.jpg" alt=""></a></li>
+                <li><a href="#2"><img src="./resource/imgs/lunbo1.jpg" alt=""></a></li>
+                <li><a href="#3"><img src="./resource/imgs/lunbo2.jpg" alt=""></a></li>
+                <li><a href="#4"><img src="./resource/imgs/lunbo.jpg" alt=""></a></li>
+            </ul>
+            <ul class="pagination">
+                <li class="focus"></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+        <ul class="r AD">
+            <li>
+                <img src="./resource/imgs/ChMlWlzrxEGIP64nAAAx5UVt_LsAAKPNQBFGPcAADH9453.jpg" alt="">
+            </li>
+            <li>
+                <img src="./resource/imgs/ChMlWlzrxQmICHnpAAAvR84b1JwAAKPNQN02kgAAC9f941.jpg" alt="">
+            </li>
+        </ul>
+    </div>
+
+    <ul class="service-list clearfix w">
+        <li class="search-one l">
+            <i></i>
+            <span class="servive-class l">正品保障</span>
+        </li>
+        <li class="search-two l">
+            <i></i>
+            <span class="servive-class">先行赔付</span>
+        </li>
+        <li class="search-three l">
+            <i></i>
+            <span class="servive-class ">发票保障</span>
+        </li>
+        <li class="search-four l">
+            <i></i>
+            <span class="servive-class">24h发货</span>
+        </li>
+        <li class="search-five l">
+            <i></i>
+            <span class="servive-class">无忧退货</span>
+        </li>
+    </ul>
+
+    <!-- ===============================精品团=========================================== -->
+    <div class="bout-tuan">
+        <div class="clearfix w">
+            <h3>精品团</h3>
+            <span class="prev"></span>
+            <span class="next"></span>
+        </div>
+        <div class="border-tuan w">
+            <ul>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns1.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】美图V6自拍美颜 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns2.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】Phone X 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns3.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】华为自拍美颜 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns4.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】小米黑鲨 8G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns5.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】美图V6自拍美颜 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns6.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】美图V6自拍美颜 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+                <li class="list-li">
+                    <div class="pic">
+                        <img src="./resource/imgs/luns7.jpg" alt="">
+                    </div>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮 送耳机】美图V6自拍美颜 6G+128GB 全网通 移动联通电信4G 鹿特丹橙 行货128GB
+                        </a>
+                    </div>
+                    <span>￥2666<co>￥2888</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">立即抢购</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="fix">
+    <h3 class="day-t w">今日团</h3>
+    <ul class="w day-u">
+        <li class="focus">默认</li>
+        <li><a href="#">最新团购</a></li>
+        <li>销量<b></b></li>
+        <li>价格<b></b></li>
+    </ul>
+    </div>
+
+    <!-- 商品页 -->
+    <div class="w big-box">
+        <ul id="item-box">
+            <li class="item l">
+                <div class="pic">
+                    <a href="#">
+                        <img src="./resource/imgs/soping1.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【低价开团】华为I Mate 20 64GB全网通版 双卡双待
+                        </a>
+                    </div>
+                    <span>￥2688<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping2.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【顺丰包邮】华为I Mate 20 X 徕卡三摄256GB全网通
+                        </a>
+                    </div>
+                    <span>￥2688<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping3.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【低价开团，当天发】华为 P30 Pro 8GB 超感光徕卡四摄
+                        </a>
+                    </div>
+                    <span>￥2688<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping4.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            七夕徕卡相机特价促销 莱卡Q-P全画幅自动对焦数码相机
+                        </a>
+                    </div>
+                    <span>￥2688<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping5.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            新款ThinkPad锋芒 2019 S3（20QC000PCD）
+                        </a>
+                    </div>
+                    <span>￥2688<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping6.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【新品现货 顺丰包邮】华为 P30 8GB麒麟980 8G
+                        </a>
+                    </div>
+                    <span>￥4288<co>￥5200</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping7.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            【低价开团，送壳膜】三星 A8s（6GB）骁龙710芯片后置三摄
+                        </a>
+                    </div>
+                    <span>￥4999<co>￥5999</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping8.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            AMD 锐龙7 3800X 处理器 首发 现货！！
+                        </a>
+                    </div>
+                    <span>￥3000<co>￥3222</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+            <li class="item l">
+                <div class="pic">
+                    <a href="javascript:;">
+                        <img src="./resource/imgs/soping9.jpg" alt="">
+                    </a>
+                    <div class="title">
+                        <a href="javascript:;" target="_blank">
+                            甲骨龙AMD 锐龙 R7 2700八核心 RTX2070 8G
+                        </a>
+                    </div>
+                    <span>￥4400<co>￥5000</co></span>
+                    <a href="javascript:;" class="jin">
+                        锦鑫科技电脑专营店
+                    </a>
+                    <a href="javascript:;" class="btn">马上抢</a>
+                </div>
+                <p class="time">
+                </p>
+                <i></i>
+            </li>
+        </ul>
+    </div>
+    <script src="./script/time.js"> </script>
+    
+    
+    <div class="w more">
+        <a href="javascript:;">更多团购商品 > ></a>
+    </div>
+    
+    <div class="wrap-footer">
+        <div class="w footer clearfix">
+            <dl>
+                <dt>购物指南</dt>
+                <dd><a href="javascript:;" target="_blank">购物流程</a></dd>
+                <dd><a href="javascript:;" target="_blank">常见属性</a></dd>
+            </dl>
+            
+            <dl>
+                <dt>售后服务</dt>
+                <dd><a href="javascript:;" target="_blank">申请退款</a></dd>
+                <dd><a href="javascript:;" target="_blank">售后政策</a></dd>
+                <dd><a href="javascript:;" target="_blank">售后问题</a></dd>
+            </dl>
+            
+            
+            
+            <dl>
+                <dt>团购特点</dt>
+                <dd><a href="javascript:;" target="_blank">团购优势</a></dd>
+                <dd><a href="javascript:;" target="_blank">参团效果</a></dd>
+            </dl>
+            
+            <dl>
+                <dt> 商务合作</dt>
+                <dd><a href="javascript:;" target="_blank">媒体合作</a></dd>
+                <dd><a href="javascript:;" target="_blank">团购合作</a></dd>
+            </dl>
+            
+            
+            
+            
+            <dl>
+                <dt>商城服务</dt>
+                <dd><a href="javascript:;" target="_blank">010-83417888-9185</a></dd>
+                <dd><a href="javascript:;" target="_blank">工作日(9:00-18:00)</a></dd>
+                <dd class="last-d"><a href="javascript:;" target="_blank">关注新浪微博</a></dd>
+            </dl>
+            <div class="service-number">
+                <p><img src="./resource/imgs/zolDingYue.jpg" alt=""></p>
+                <p> 微信关注：Z商城</p>
+                <p>扫码赢优惠&nbsp;订单时时查</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-nav">
+        <div class="w">
+            <div class="wrapper">
+                <span class="label">合作伙伴：</span>
+                <div class="footer-nav">
+                    <a href="javascript:;" target="_blank">中关村在线</a> | <a href="javascript:;" target="_blank">Z商城</a> | <a href="javascript:;" target="_blank">团购</a> | <a href="javascript:;" target="_blank">产品报价</a> | <a href="javascript:;" target="_blank">论坛</a> | <a href="javascript:;" target="_blank">问答</a>					</div>
+                    <div class="copyright">
+                                <a href="javascript:;" target="_blank">关于Z商城</a> | <a href="javascript:;" target="_blank">帮助中心</a> | <a href="javascript:;" target="_blank">联系我们</a>                    </div>
+                                <div class="copyright">
+                                    <span style="margin-left:-5px;">
+                                            ©2019 中关村在线 版权所有. <a href="javascript:;" target="_blank">京ICP证150096号</a>京ICP备14061128号<a href="javascript:;" target="_blank">网络文化经营许可证京网文[2016]1631-199</a>						</span>
+                                        </div>
+                                        <a href="javascript:;" class="gg">广告</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <script src="./script/fix.js"></script>
+                        </body>
+                        
+</html>

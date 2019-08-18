@@ -1,0 +1,27 @@
+.pagenumber {
+    color: #999;
+    font-size: 14px;
+    font-family: Tahoma, Helvetica, Arial, "\5FAE\8F6F\96C5\9ED1", sans-serif;
+    line-height: 30px;
+    height: 30px;
+    margin-top: 20px;
+}
+
+.pagenumber i {
+    margin: 0 5px;
+}
+
+.pagenumber a {
+    color: #999;
+}
+
+.pagenumber a:hover {
+    color: #009ce6;
+}
+
+.pagenumber span {
+    margin-right: 10px;
+}
+
+.fl {float:left}
+.fr {float:right;}

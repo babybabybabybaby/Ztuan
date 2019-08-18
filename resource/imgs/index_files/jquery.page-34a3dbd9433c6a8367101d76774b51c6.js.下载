@@ -1,0 +1,129 @@
+(function($){
+	var ms = {
+		init:function(obj,args){
+			return (function(){
+				ms.fillHtml(obj,args);
+				ms.bindEvent(obj,args);
+			})();
+		},
+		//填充html
+		fillHtml:function(obj,args){
+			return (function(){
+				obj.empty();
+				obj.append('<div class="pagenumber">' +
+						   ' 	<div class="fl widthp30">'+
+						   '         <span>总共<i>'+args.pageCount+'</i>页</span>'+
+						   '         <span>总共<i>'+args.total+'</i>条</span>'+
+						   '         <span>第<i>'+args.current+'</i> 页</span>'+
+						   '    </div>'+
+						   '    <div class="fl widthp70 tar inputgroup">' +
+						   '		 <span><a href="javascript:;" class="homePage">首页</a></span>' +
+						   '         <span><a href="javascript:;" class="prevPage" >前一页</a></span>' +
+						   '		 <span><a href="javascript:;" class="nextPage">后一页</a></span>' +
+						   '		 <span><a href="javascript:;" class="finalPage" >最后页</a></span>' +
+						   '         <span>转到第</span><span><input onkeyup=this.value=this.value.replace(/[^0-9]/g,"") onafterpaste=this.value=this.value.replace(/[^0-9]/g,"")  type="text"  class="width40 changePageText" style="width:40px;"/>  页</span><span><input type="button" class="btn btn-c5 btn-samll2 changePage" style="width: 40px;padding: 0 0; min-width: 10px;" value="Go"></span>' +
+						   '	</div>' +
+						   '</div>');
+				//首页
+				if(args.current <= 1){ 
+					obj.remove('.homePage');
+				}
+				
+				//上一页
+				if(args.current <= 1){
+					obj.remove('.prevPage');
+				}
+				
+				//下一页
+				if(args.current >= args.pageCount){
+					obj.remove('.nextPage');
+				}
+				
+				//尾页
+				if(args.current >= args.pageCount){
+					obj.remove('.finalPage');
+				}
+			})();
+		},
+		//绑定事件
+		bindEvent:function(obj,args){
+			return (function(){
+				obj.on("click","a.tcdNumber",function(){
+					var current = parseInt($(this).text());
+					ms.fillHtml(obj,{"current":current,"pageCount":args.pageCount,"dataBars":args.dataBars});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(current);
+					}
+				});
+				//首页
+				obj.on("click","a.homePage",function(){
+					//ms.fillHtml(obj,{"current":1,"pageCount":args.pageCount,"dataBars":args.dataBars});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(1);
+					}
+				});
+				//上一页
+				obj.on("click","a.prevPage",function(){
+					var current = args.current;
+					if(current>1){
+						current--;
+					}
+					//ms.fillHtml(obj,{"current":current,"pageCount":args.pageCount,"dataBars":args.dataBars});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(current);
+					}
+				});
+				//下一页
+				obj.on("click","a.nextPage",function(){
+					var current = args.current;
+					if(current<args.pageCount){
+						current++;
+					}
+					//ms.fillHtml(obj,{"current":current,"pageCount":args.pageCount,"dataBars":args.dataBars,total:""});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(current);
+					}
+				});
+				//尾页
+				obj.on("click","a.finalPage",function(){
+					//ms.fillHtml(obj,{"current":args.pageCount,"pageCount":args.pageCount,"dataBars":args.dataBars});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(args.pageCount);
+					}
+				});
+				
+				//转到第几页
+				obj.on("click","input.changePage",function(){
+//					var valid = /^[0-9]*[1-9][0-9]*$/;
+					var val = obj.find(".changePageText").val(); 
+					if(val==''){
+						return ;
+					}
+					val = parseInt(val);
+//					if(!valid.test(val)){
+//						alert("请输入合法的页码");
+//						return;
+//					}
+					if(val>args.pageCount){
+						val=args.pageCount;
+					}
+					if(val<=0){
+						val=1;
+					}
+					//ms.fillHtml(obj,{"current":parseInt(val),"pageCount":args.pageCount,"dataBars":args.dataBars});
+					if(typeof(args.backFn)=="function"){
+						args.backFn(val);
+					}
+				});
+			})();
+		}
+	}
+	$.fn.createPage = function(options){
+		var args = $.extend({
+			pageCount : 15,
+			current : 1,
+			backFn : function(){}
+		},options);
+		ms.init(this,args);
+	}
+})(jQuery);

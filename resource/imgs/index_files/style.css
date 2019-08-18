@@ -1,0 +1,116 @@
+.navbar{
+    height:50px;
+    background:#428bca;
+}
+.navbar-container,.navbar .navbar-brand{
+    padding:0;
+    margin:0;
+}
+.ace-nav>li.light-blue>a,.ace-nav>li.open.light-blue>a,.ace-nav>li.open.light-blue>a{
+    background:none !important;
+    color:#fff !important;
+}
+.ace-nav>li.light-blue>a:hover{
+    background:none;
+    color:#fff;
+}
+.ace-nav>li>a>[class*="icon-"]{
+    color:#fff;
+}
+.user-info{
+    top:0;
+    line-height:40px;
+}
+.menubar{
+    float:left;
+    height:50px;
+}
+.menubar div{
+    float:left;
+}
+.menubar a{
+    display:inline-block;
+    padding:0 0px 0 25px;;
+    line-height:48px;
+    font-size:16px;
+    color:#fff;
+    border-bottom:2px solid #428bca;
+    margin:0px 20px;
+}
+.menubar div.on{
+    background-color:#fff;
+}
+.menubar div.on a{
+    font-weight:bold;
+    color:#558ac5;
+}
+.menubar a:hover{
+    text-decoration:none;
+}
+.menubar a.a0{
+    background:url(../css/images/tb0-0.png) no-repeat left;
+    
+    background-size:20px auto;
+}
+.menubar div.on a.a0{
+    background:url(../css/images/tb0-1.png) no-repeat left;
+    background-size:20px auto;
+    
+    color:#558ac5;
+    background-color:#fff;
+}
+.menubar a.a1{
+    background:url(../css/images/tb1-0.png) no-repeat left;
+    background-size:20px auto;
+    
+}
+.menubar div.on a.a1{
+    background:url(../css/images/tb1-1.png) no-repeat left;
+    background-size:20px auto;
+    
+    color:#558ac5;
+}
+.menubar a.a2{
+    background:url(../css/images/tb2-0.png) no-repeat left;
+    background-size:20px auto;
+    
+}
+.menubar div.on a.a2{
+    background:url(../css/images/tb2-1.png) no-repeat left;
+    background-size:20px auto;
+    
+    color:#558ac5;
+}
+.menubar a.a3{
+    background:url(../css/images/tb3-0.png) no-repeat left;
+    background-size:20px auto;
+    
+}
+.menubar div.on a.a3{
+    background:url(../css/images/tb3-1.png) no-repeat left;
+    background-size:20px auto;
+    
+    color:#558ac5;
+}
+.menubar a.a4{
+    background:url(../css/images/tb4-0.png) no-repeat left;
+    background-size:20px auto;
+    
+}
+.menubar div.on a.a4{
+    background:url(../css/images/tb4-1.png) no-repeat left;
+    background-size:20px auto;
+    
+    color:#558ac5;
+}
+
+.ace-nav>li {
+    line-height: 50px;
+    height: 50px;
+    border:0;
+}
+.breadcrumbs {
+    background-color:white;
+}
+
+

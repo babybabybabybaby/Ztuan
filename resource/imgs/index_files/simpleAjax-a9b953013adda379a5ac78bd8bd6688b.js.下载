@@ -1,0 +1,54 @@
+jQuery.simpleAjax = function(url,data,success,error,ajaxSetup){
+    	var jsonData = null;
+    	var paramAjaxSetup = true;
+//    	if(typeof data == 'number'||typeof data == 'string'){ 
+//    		jsonData = data;
+//		}else{
+//			jsonData = JSON.stringify(data);
+//		}
+	    if(data!=null){
+	    	jsonData =  JSON.stringify(data);
+	    }
+	    if(ajaxSetup!='undefined' && ajaxSetup!=null){
+	    	paramAjaxSetup = ajaxSetup;
+	    }
+		$.ajax({
+			url: url,
+			type: "post",
+			data: jsonData,
+			dataType: "json",
+		    async:paramAjaxSetup, 
+			contentType:"application/json;charset=utf-8",
+			success:function (result){
+				if(typeof success=='function'){
+					if(result.isSuccess==0){
+						layer.alert(result.msg);
+						error(result);
+					}else{
+						success(result);
+					}
+				}else{
+					$.error(" simple ajax success param is not function ");
+				}
+			},
+			error:function (result){
+				if(typeof error=='function'){
+					error(result);
+				}else{
+					$.error(" simple ajax error param is not function ");
+				}
+			},
+			//ajax请求之前
+			beforeSend: function () {
+				if($('.loading').length>0){
+					$('.loading').show();
+				}
+		    },
+		     //ajax请求完成，不管成功失败
+			complete: function () {
+				if($('.loading').length>0){
+					$('.loading').hide();
+				}
+			}
+		});
+};

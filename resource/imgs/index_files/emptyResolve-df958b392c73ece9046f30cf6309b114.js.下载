@@ -1,0 +1,11 @@
+jQuery.emptyResolve = function(data){
+	if(data==null){
+		return "";
+	}else if(data=='null'){
+		return "";
+	}else if(data == undefined){
+		return "";
+	}else{
+		return data;
+	}
+};

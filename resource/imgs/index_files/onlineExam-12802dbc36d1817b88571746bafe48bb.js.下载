@@ -1,0 +1,934 @@
+var idxs = ['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五'];
+    	var paperTemplateInfo;// 题型信息
+    	var exam;// 题型信息
+    	var user;// 题型信息
+		var objectiveMark=0;//客观题总分数	
+		var subjectiveMark=0;//主观题总分数	
+		var startTime;//试卷开始时间
+		var interval;//定时器用于记录已考时间
+		var examTime=0;//已考时间
+		var timer;//倒计时定时器
+		var limitMinute;
+		var redisTime;
+		var fiveMinite=0;
+		var timing=10000;
+		$(document).ready(function (){
+			startTimeInit();
+		});
+		
+		//查询是否已经存在开始时间
+		function startTimeInit(){
+		 	 var examId = $("#examId").val();
+			 var subjectId = $("#subjectId").val();
+			 $.ajax({
+				    url: "/redisController/queryRedisExamStartTime",
+				    data: {examId : examId, subjectId:subjectId},
+				    type: "POST",
+				    timeout: 15000,
+				    async: false,
+				    success: function(result){
+				    	 if(result.code == 2000){
+				              	if(result.data  ==null){
+				              		initRedisExamStartTime();
+				              	}else{
+				              		startTime=result.data ;
+				              	}
+				              	initDiv(null);
+				              	queryRedisExamTime();
+							 }else{
+							 	layer.alert('系统错误(开考时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+								 window.history.back();
+					         	});
+								return;
+							 }
+				    },
+				    error: function(msg){
+				    	layer.alert('系统错误(开考时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+							 window.history.back();
+				         	});
+							return;
+				    }
+				});
+		 }
+		//考试时间初始化
+		 function initRedisExamStartTime(){
+		 	 var examId = $("#examId").val();
+			 var subjectId = $("#subjectId").val();
+			 $.ajax({
+				    url: "/redisController/initRedisExamStartTime",
+				    data: {examId : examId, subjectId:subjectId},
+				    type: "POST",
+				    timeout: 15000,
+				    success: function(result){
+				    	if(result.code == 2000){
+			              	 startTime=result.data;
+						 }else{
+						 	layer.alert('系统错误(考试时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+							 window.history.back();
+				         	});
+							return;
+						 }
+				    },
+				    error: function(msg){
+				    	layer.alert('系统错误(考试时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+							 window.history.back();
+			         	});
+						return;
+				    }
+				});
+		 }
+		 
+		 
+		 //查询是否已经存在已考时间
+		function queryRedisExamTime(){
+		 	 var examId = $("#examId").val();
+			 var subjectId = $("#subjectId").val();
+			 
+			 $.ajax({
+				    url: "/redisController/queryRedisExamTime",
+				    data: {examId : examId, subjectId:subjectId},
+				    type: "POST",
+				    timeout: 15000,
+				    async: false,
+				    success: function(result){
+				    	 if(result.code == 2000){
+				              	if(result.data  ==null){
+				              		examTime=0;
+				              	}else{
+				              		 examTime=Number(result.data);
+				              	}
+				              	countdownTimerInit();
+			              		// 每隔15秒钟就弹出提示信息"dhm"。
+			              		// 取消该定时设置 clearInterval(intervalID);
+				              	clearInterval(interval);//进入页面先清除定时器
+							 	interval= setInterval(initRedisExamTime, timing);
+						 }else if(result.code == 3000){
+							 layer.msg(result.data,{icon : 2, time : 2000},function () {
+								 window.history.back();
+					         });
+						 }else{
+						 	clearInterval(interval);
+						 	clearInterval(timer);
+						 	layer.alert('系统错误(已考时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+							 window.history.back();
+				         	});
+							return;
+						 }
+				    },
+				    error: function(msg){
+				    	clearInterval(interval);
+					 	layer.alert('系统错误(已考时间初始化失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+						 window.history.back();
+			         	});
+						return;
+				    }
+				});
+		 }
+		 
+		 //设置已经考试时间
+		 function initRedisExamTime(){
+		     var examId = $("#examId").val();
+			 var subjectId = $("#subjectId").val();
+			 $.ajax({
+				    url: "/redisController/initRedisExamTime",
+				    data: {examId:examId,subjectId:subjectId,examTime:timing},
+				    type: "POST",
+				    async:false,
+				    timeout:7000,
+				    success: function(result){
+				    	 if(result.code == 2000){
+				    		 //layer.msg('已考时间:'+examTime+'!', {icon : 1, time : 2000});
+				    		 examTime=Number(result.data);
+				    		 
+				    		 //重新计算倒计时---时间
+				    		 limitMinute = Number(exam.limitMinute);
+				             limitMinute = limitMinute * 60 * 1000;
+				    		 redisTime = limitMinute - examTime;
+				    		 
+				    		 //重置倒计时
+				    		 clearInterval(timer);
+			              	 timeTask();
+				    		 //alert(examTime);
+						 }else{
+							clearInterval(interval);
+					    	clearInterval(timer);
+						 	layer.alert('系统出错(更新已考时间失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+							 window.history.back();
+				         	});
+							return;
+						 }
+				    },
+				    complete: function (XMLHttpRequest, textStatus) {
+			            if(textStatus == 'timeout'){
+			                clearInterval(interval);
+				    		clearInterval(timer);
+					 		layer.alert('网络请求超时，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+					 			window.history.back();
+		         			});
+							return;
+			            }
+			        },
+				    error: function (XMLHttpRequest, error) {        
+				    	clearInterval(interval);
+				    	clearInterval(timer);
+					 	layer.alert('网络请求超时，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+					 		window.history.back();
+			         	});
+						return;
+			        }	
+				});
+		 }
+		 
+			
+		 //考试时间初始化
+		 function countdownTimerInit(){
+			 //初始化考试时长
+	         limitMinute = Number(exam.limitMinute);
+	         limitMinute = limitMinute * 60 * 1000;
+	         
+			 if(limitMinute <= examTime){
+			     $('#showTime').html('00:00:00');
+			     saveInfo(2);//自动提交
+			 }else{
+				 redisTime = limitMinute - examTime;
+				 timeTask();
+			 }
+		 }
+		 
+		 //倒计时定时任务
+		 function timeTask(){
+			    redisTime = limitMinute - examTime;
+			    clearInterval(timer);//进入页面先清除定时器
+				timer = setInterval(function(){
+					redisTime -= 1000 ;
+					if(redisTime >0){
+						countTime(redisTime);
+					}else{
+						$('#showTime').html('00:00:00');
+			        	saveInfo(2);
+			        	clearInterval(timingTask);
+					}
+				},1000)
+			}
+		 
+	     
+	     //倒计时
+	  	 function countTime(rTime) {
+	  	 	 //结束前五分钟进行提示
+	  		 if(rTime>=4.7*60*1000 && rTime<=5*60*1000 ){
+	  			fiveMinite++;
+	  		 }
+	  		 if(fiveMinite==1){
+	  			layer.alert('还有五分钟考试就要结束了,请提前做好准备,到时间后系统将会自动提交答卷!');
+	  		 }
+	         var h,m,s;  
+	         if (rTime >= 0) {  
+	              h = Math.floor(rTime/1000/60/60%24);  
+	              m = Math.floor(rTime/1000/60%60);  
+	              s = Math.floor(rTime/1000%60);                     
+	         }
+	         if((h+m+s) <= 0){
+	        	  $('#showTime').html('00:00:00');
+	        	  saveInfo(2);
+	         }else{
+		         $('#showTime').html(supplement(h)+':'+supplement(m)+':'+supplement(s));
+	         }
+	      }	
+		
+		// 初始化列表数据
+		function initDiv(param){
+			var paperId = $("#paperId").val();
+			if(paperId ==null || paperId==''){
+				layer.alert('没有查找到试卷,请先创建试卷',{icon: 2,closeBtn: 0 },function () {
+					window.history.back();
+		         });
+				return;
+			}else{
+				initRedisPaperId();
+			}
+			// 获取起止时间
+			param = {};
+			param.paperId = paperId;
+			jsonData =  JSON.stringify(param);
+			$.ajax({
+    			url: "/examController/queryExamPaperInfo",
+    			type: "post",
+    			data: jsonData,
+    			dataType: "json",
+    		    async:false, 
+    			contentType:"application/json;charset=utf-8",
+    			success:function (result){
+					if(result.code == 2000){
+				    	var data = result.data;
+				    	paperTemplateInfo= data.paperTemplateInfo;
+				    	exam= data.exam;
+				    	user= data.user;
+				    	if(paperTemplateInfo ==null || exam ==null || user==null){
+				    		layer.alert('数据初始化失败',{icon: 2,closeBtn: 0 },function () {
+								window.history.back();
+					         });
+				    	}
+				    	$('#examName').html(exam.name);
+				    	$('#subjectName').html(exam.subjectName);
+				    	$('#limitMinute').text("答题限时:"+exam.limitMinute+"分钟");
+				    	$('#totalScore').text("满分:"+exam.totalMark+"分");
+				    	$('#passScore').text("合格:"+exam.passScore+"分");
+				    	$('#className').text("班级:"+user.student.className);
+				    	$('#allowResubmit').val(exam.allowResubmit);
+				    	
+				    	// 0:不可以粘帖;1:可以粘帖
+				    	if (exam.allowPaste==0){
+				    		document.onpaste = function(){ return false; };
+				    	}
+				    	
+				    	
+				    	initLeft();
+				    	initRight();
+				}else{
+						layer.msg('数据初始化失败!', {icon : 2, time : 1500});
+					}
+	    			},
+	    			error:function (result){
+	    				layer.msg('数据初始化失败!', {icon : 2, time : 1500});
+	    			}
+			});
+			$('.showInfo').show();
+		}
+		
+		//初始化左边菜单
+		function initLeft(){
+			var divHtmlStr = '';
+			    // 遍历题型
+			    for(var i = 0; i < paperTemplateInfo.length; i++){
+			      
+			      var questionDTOList=paperTemplateInfo[i].questionDTOList;
+		          divHtmlStr +=	' <div class="my-left-title">'+idxs[i+1]+'、'+paperTemplateInfo[i].questionTypeName+'（共'+questionDTOList.length+'题，每题'+paperTemplateInfo[i].perQuestionMark+'分）</div>';
+		          divHtmlStr +='  <div class="my-left-cont">';
+		          /* 遍历题目 */
+		          for(var j = 0; j < questionDTOList.length; j++){
+		          		var num= j+1; 
+		          		divHtmlStr +=' <a href="#ti'+i+questionDTOList[j].id+'" id="tising'+questionDTOList[j].id+'">'+num+'</a>';
+		          }
+	          	  divHtmlStr +=	' </div>';
+	  	    }
+			$('.my-left-bar').html(divHtmlStr);
+		}
+		
+		//初始化右边菜单
+		function initRight(){
+			 	var divHtmlStr = '';
+			    // 遍历题型
+			    for(var i = 0; i < paperTemplateInfo.length; i++){
+			      var questionDTOList=paperTemplateInfo[i].questionDTOList;
+		          divHtmlStr += ' <div class="item  questionType'+paperTemplateInfo.id+'">';
+		          divHtmlStr +=	' <div class="title">'+idxs[i+1]+'、'+paperTemplateInfo[i].questionTypeName+'（共'+questionDTOList.length+'题，每题'+paperTemplateInfo[i].perQuestionMark+'分）</div>';
+		          /* 遍历题目 */
+		          for(var j = 0; j < questionDTOList.length; j++){
+		          	if(questionDTOList[j].sing==1){
+		          		$("#tising"+questionDTOList[j].id).removeClass("on");
+		          		$("#tising"+questionDTOList[j].id).addClass("on");
+		          	}
+		          	
+		          	
+		        	  var index=j+1;
+		        	  divHtmlStr +=	' <div class="cont  question'+questionDTOList[j].id+'"  id="ti'+i+questionDTOList[j].id+'">';
+		        	  if(questionDTOList[j].questionTypeId ==4){
+		        		  	var content = questionDTOList[j].content;
+   				        	//var r = /\{{(.+?)\}}/g;
+				        	//var  strCon=content.match(r);
+			        		var re = /{{(.*?)}}/g;
+			        		var strCon = [];
+			        		while (temp = re.exec(content)) {
+			        			strCon.push(temp[0])
+			        		}	
+				        	var blankList = questionDTOList[j].blankList;
+				        	if(strCon !=null){
+				        		for(var n=0;n<strCon.length;n++){
+				        			var balnkFront =''+user.student.id+'&'+exam.subjectId+'&'+exam.id+'&blank&'+questionDTOList[j].id+'&'+n;
+				        			var strLh=strCon[n];
+				        			if(blankList[n] == null){
+				        				content=content.replace(strCon[n],'<input  type="text"  class="changeInfo"  onchange="submitRedisBlank(this,'+n+','+questionDTOList[j].id+')" style="margin-left: 10px;width:300px;"/><span  style="margin-left: 10px;"></span>');
+				        			}else if(blankList[n].blankKey == balnkFront && blankList[n].blankKey !=''){
+				        				content=content.replace(strCon[n],'<input  type="text"  class="changeInfo"   value=\''+blankList[n].blankValue+'\'    onchange="submitRedisBlank(this,'+n+','+questionDTOList[j].id+')" style="margin-left: 10px;width:300px;"/><span  style="margin-left: 10px;"></span>');
+				        			}else if(blankList[n].blankKey ==''){
+				        				content=content.replace(strCon[n],'<input  type="text"  class="changeInfo"      onchange="submitRedisBlank(this,'+n+','+questionDTOList[j].id+')" style="margin-left: 10px;width:300px;"/><span  style="margin-left: 10px;"></span>');
+				        			}
+				        		}
+				        		divHtmlStr +=' <div class="t"><span style="float:left;max-width:1000px;margin-top: 15px">'+index+'.</span><span style="float:left;max-width:1000px;margin-top: 15px"><pre>'+content+'</pre></span></div>';
+				        	}
+		        	  }else{
+				          divHtmlStr +=' <div class="t"><span style="float:left;max-width:1000px;">'+index+'.</span><span style="float:left;max-width:1000px;"><pre>'+questionDTOList[j].content+'</pre></span></div>';
+		        	  }
+			          if(questionDTOList[j].questionTypeId ==1 || questionDTOList[j].questionTypeId ==2 || questionDTOList[j].questionTypeId ==3){
+			        	  var type="radio";
+			        	  var qustionOptionList=questionDTOList[j].questionOptions;
+			        	  if(questionDTOList[j].questionTypeId ==2){
+			        		  type="checkbox";
+			        	  }
+			        	  for(var k = 0; k < qustionOptionList.length; k++){
+			        		  var content=qustionOptionList[k].content;
+			        		  if(questionDTOList[j].questionTypeId ==3){
+			        			  if(k==0){
+			        				  content="正确";
+			        			  }else{
+			        				  content="错误";
+			        			  }
+			        		  }
+			        		  if(questionDTOList[j].questionTypeId ==2){
+			        			 if(qustionOptionList[k].redisOption == 1){
+			        				  divHtmlStr +=	' <div class="t" style="padding-left:20px;overflow：hidden;"><input style="width: 20px;height: 20px;margin-right: 10px;margin-left: 15px;float: left;"  value="'+qustionOptionList[k].id+'"  type='+type+' checked  name='+type+i+j+'  onchange="submitRedisMultipleChoise(this,'+questionDTOList[j].id+','+qustionOptionList[k].id+')" /><span style="float:left;">' +getChar(k) +' </span><span style="float:left;max-width:1000px;margin-left: 10px;"> <pre>'+content+'</pre></span></div>';
+			     				 }else{
+			     					 divHtmlStr +=	' <div class="t" style="padding-left:20px;overflow：hidden;"><input style="width: 20px;height: 20px;margin-right: 10px;margin-left: 15px;float: left;" value="'+qustionOptionList[k].id+'"  type='+type+'  name='+type+i+j+'  onchange="submitRedisMultipleChoise(this,'+questionDTOList[j].id+','+qustionOptionList[k].id+')" /> <span style="float:left;">' +getChar(k) +'</span><span style="float:left;max-width:1000px;margin-left: 10px;"> <pre>' +content+'</pre></span></div>';
+			     				 }
+			        		  }else{
+			        			  if(qustionOptionList[k].redisOption == 1){
+				        		  		divHtmlStr +=	' <div class="t" style="padding-left:20px;overflow：hidden;"><input style="width: 20px;height: 20px;margin-right: 10px;margin-left: 15px;float: left;"  value="'+qustionOptionList[k].id+'" type='+type+' checked name='+type+i+j+'  onchange="submitRedisSingleChoise(this,'+questionDTOList[j].id+','+qustionOptionList[k].id+')" /><span style="float:left;">' +getChar(k) +'</span><span style="float:left;max-width:1000px;margin-left: 10px;"> <pre>'+content+'</pre></span></div>';
+			        			  }else{
+				        		  		divHtmlStr +=	' <div class="t" style="padding-left:20px;overflow：hidden;"><input style="width: 20px;height: 20px;margin-right: 10px;margin-left: 15px;float: left;"  value="'+qustionOptionList[k].id+'" type='+type+'  name='+type+i+j+'  onchange="submitRedisSingleChoise(this,'+questionDTOList[j].id+','+qustionOptionList[k].id+')" /> <span style="float:left;"> ' +getChar(k) +' </span><span style="float:left;max-width:1000px;margin-left: 10px;"><pre> '+content+'</pre></span></div>';
+			        			  }
+			        		}
+			        	  }
+			          }else if(questionDTOList[j].questionTypeId ==4){
+			          }else{
+			        	  if(questionDTOList[j].redisDate != ''  && questionDTOList[j].redisDate != null){
+				        	    divHtmlStr +=	'<div class="t"> <textarea  onchange="submitRedisSubject(this,'+questionDTOList[j].id+')">'+questionDTOList[j].redisDate+'</textarea> </div>';
+			        	  }else{
+			        	  		divHtmlStr +=	'<div class="t"> <textarea  onchange="submitRedisSubject(this,'+questionDTOList[j].id+')"></textarea> </div>';
+			        	  }
+			          }
+		          	  divHtmlStr +=	' </div>';
+		          }
+		          divHtmlStr +=	' </div>';
+	  	    }
+			$('#divHtmlStr').html(divHtmlStr);
+		}
+
+		
+		
+		//缓存试卷ID
+		function initRedisPaperId(){
+			 var examId = $("#examId").val();
+			 var subjectId = $("#subjectId").val();
+			 var paperId = $("#paperId").val();
+			 $.post('/redisController/initRedisPaperId',{examId : examId, subjectId:subjectId,paperId:paperId},function(result){
+	              if(result.code == 2000){
+	              	if(result.data  ==null){
+	              		initRedisExamStartTime();
+	              	}
+				 }else{
+				 	layer.alert('系统错误(缓存试卷ID失败)，请联系管理员!',{icon: 2,closeBtn: 0 },function () {
+					 window.history.back();
+		         	});
+					return;
+				 }
+			 });
+		 }
+		
+		
+		 // 点击答案实时提交redis 单选 判断
+		 function submitRedisSingleChoise(object, questionId, optionId){
+			 var examId= exam.id;
+			 var subjectId= exam.subjectId;
+			 $("#tising"+questionId).removeClass("on");
+		     $("#tising"+questionId).addClass("on");
+			 $.post('/redisController/submitRedisSingleChoise',{examId : examId,  subjectId:subjectId,questionId : questionId, optionId : optionId},function(result){
+				 if(result.code == 2000){
+					 //layer.msg('缓存成功!', {icon : 1, time : 1500});
+				 }else{
+					clearInterval(timer);
+					layer.alert('系统错误(单选/判断答案缓存失败)，请联系管理员!', {icon : 2,closeBtn: 0}, function(){
+				 		window.history.back();
+		        	});
+				 }
+			 });
+		 }
+		 // 点击答案实时提交redis 多选题
+		 function submitRedisMultipleChoise(object, questionId, optionId){
+			 var examId= exam.id;
+			 var subjectId= exam.subjectId;
+			 var redisVal = '';
+			 if($(object).is(':checked')){
+				 isSelected = '1';
+			 }else{
+				 isSelected = '0';
+			 }
+    	     var obj=$(object).parents('.cont');
+    	     var strVal= $(obj).find("input[type=checkbox]:checked").length
+			 if(strVal>0){
+			 	$("#tising"+questionId).removeClass("on");
+          		$("#tising"+questionId).addClass("on");
+			 }else{
+			 	$("#tising"+questionId).removeClass("on");
+			 }
+    	     
+			 $.post('/redisController/submitRedisMultipleChoise',{examId : examId,  subjectId:subjectId,questionId : questionId, optionId : optionId, isSelected : isSelected,strVal:strVal},function(result){
+				 if(result.code == 2000){
+					// layer.msg('缓存成功!', {icon : 1, time : 1500});
+				 }else{
+					 clearInterval(timer);
+					layer.alert('系统错误(多选题答案缓存失败)，请联系管理员!', {icon : 2,closeBtn: 0}, function(){
+				 		window.history.back();
+		        	});
+				 }
+			 });
+		 }
+		 // 点击答案实时提交redis 填空
+		 function submitRedisBlank(object,num, questionId){
+			 var examId= exam.id;
+			 var subjectId= exam.subjectId;
+			 var answer=$(object).val();// 获取值
+			 
+			 var strVal="";
+			 var obj=$(object).parents('.cont');
+			 $(obj).find("input").each(function(k){
+				strVal+=$(this).val();
+    	     });
+    	     if(strVal.trim() != ''){
+			      $("#tising"+questionId).removeClass("on");
+	      		  $("#tising"+questionId).addClass("on");
+		     }else{
+		     	  $("#tising"+questionId).removeClass("on");
+		     }
+    	     
+			 $.post('/redisController/submitRedisBlank',{examId : examId,  subjectId:subjectId,questionId : questionId, num : num,answer:answer,strVal:strVal},function(result){
+				 if(result.code == 2000){
+					// layer.msg('缓存成功!', {icon : 1, time : 1500});
+				 }else{
+					 clearInterval(timer);
+					layer.alert('系统错误(填空题答案缓存失败)，请联系管理员!', {icon : 2,closeBtn: 0}, function(){
+				 		window.history.back();
+		        	});
+				 }
+			 });
+		 }
+		 // 点击答案实时提交redis 主观题
+		 function submitRedisSubject(object, questionId){
+			 var examId= exam.id;
+			 var subjectId= exam.subjectId;
+			 var answer=$(object).val();// 获取值
+			  if(answer.trim() != ''){
+			      $("#tising"+questionId).removeClass("on");
+	      		  $("#tising"+questionId).addClass("on");
+		     }else{
+		     	$("#tising"+questionId).removeClass("on");
+		     }
+			 $.post('/redisController/submitRedisSubject',{examId : examId, subjectId:subjectId , questionId : questionId , answer:answer},function(result){
+				 if(result.code == 2000){
+					 //layer.msg('缓存成功!', {icon : 1, time : 1500});
+				 }else{
+					 clearInterval(timer);
+					layer.alert('系统错误(主观题答案缓存失败)，请联系管理员!', {icon : 2,closeBtn: 0}, function(){
+				 		window.history.back();
+		        	});
+				 }
+			 });
+		 }
+		
+		 //手动提交确认
+		 function save(obj) {
+	         layer.confirm('确认要提交吗？', {
+	            btn : [ '确定', '取消' ]//按钮
+	        }, function(index) {
+	        	saveInfo(obj);
+	        }); 
+	    }
+		 
+		//学生提交信息
+		var flags = false;
+		function  saveInfo(obj){
+			var allStr=getSubjectAndObjectAnswerInfo();//获取主观题串和客观题串
+			var objectiveAnswerJson=  allStr.objectiveAnswerJson;
+			var subjectAnswerJson=  allStr.subjectAnswerJson;
+			var examId  =exam.id;
+			var subjectId=exam.subjectId;
+			var paperId = $("#paperId").val();
+			var examTimer= Number(examTime/1000/60);//分钟
+			var checkState =0;
+			if(exam.isObjective==1){
+				checkState=1;
+			}
+			var data = {
+    			 examId : examId,
+    			 subjectId:subjectId,
+    			 paperId : paperId, 
+    			 examTime : examTimer, 
+    			 objectiveAnswerJson : objectiveAnswerJson,//客观题 答案串
+    			 subjectAnswerJson : subjectAnswerJson,//主观题 答案串
+    			 objectiveMark:Math.round(objectiveMark),
+    			 subjectSmartMark:Math.round(subjectiveMark),
+    			 checkState : checkState
+	    	 }
+	       	 jsonData =  JSON.stringify(data);
+	       	 if(flags){
+				return;
+			 }
+	       	flags =true;
+       		$.ajax({
+    			url: "/answerPaperController/insertAnswerPaper",
+    			type: "post",
+    			data: jsonData,
+    			dataType: "json",
+    		    async:false, 
+    			contentType:"application/json;charset=utf-8",
+    			success:function (result){
+    				if(result.code == 2000){
+    					console.log(result.data);
+    					clearInterval(interval);//关闭定时器
+    					clearInterval(timer);//关闭倒计时
+    					layer.close(indexs);
+    					var  strHtml="";
+    					if(exam.publish==1){
+    						if(exam.isObjective !=1){//有主观题
+    							strHtml+="<h2 style='margin-top: 10px;'>主观题:"+Math.round(subjectiveMark)+"分,（系统批卷，以最终人工批阅得分为准）</h2>";
+    						}
+    						if(exam.isSubjective !=1){//有客观题
+    							strHtml+="<h2 style='margin-top: 5px;'>客观题:"+objectiveMark+"分</h2>";
+    						}
+    						strHtml+="<h2  style='margin-top: 5px;'>满分:"+exam.totalMark+"分</h2>";
+    						$(".submitView").append(strHtml);
+    					}
+    					flags = false;
+    					if(obj==1){//手动提交
+    						layer.open({
+			    			  title: '考试结果',
+			    			  closeBtn: 0,
+			    			  type: 1,
+						      area: ['40%', '40%'],
+						      shadeClose: false, //点击遮罩不关闭
+			    			  content: $('#submit'),
+			    			  btn: ['查看考试结果', '关闭'],
+			    			  btnAlign: 'c',
+			    			  yes: function(index){
+			    				   layer.close(index);
+			    				   window.location.href = '/examController/viewExamResult?id='+result.data;
+			    			   },btn2:function(index){
+			    				   layer.close(index);
+			    				   var allowResubmit=$('#allowResubmit').val();
+			    				   if(allowResubmit==1){
+			    						var id=$("#examId").val();
+			    						var subjectId=$("#subjectId").val();
+			    						window.location.href="/examController/reExaminationList?id="+id+"&subjectId="+subjectId;
+			    				   }else{
+			    						var userId=$("#userId").val();
+			    						window.location.href = '/examController/examineeExamList?userId='+userId;
+			    					}
+			    			   }
+				    		});
+    					}else{//自动提交
+    						layer.open({
+			    			  title: '考试结果',
+			    			  closeBtn: 0,
+			    			  type: 1,
+						      area: ['40%', '40%'],
+						      shadeClose: false, //点击遮罩不关闭
+			    			  content: $('#autoSubmit'),
+			    			  btn: ['查看考试结果', '关闭'],
+			    			  btnAlign: 'c',
+			    			  yes: function(index){
+			    				   layer.close(index);
+			    				   window.location.href = '/examController/viewExamResult?id='+result.data;
+			    			   },btn2:function(index){
+			    				   layer.close(index);
+			    				   var allowResubmit=$('#allowResubmit').val();
+			    					if(allowResubmit==1){
+			    						var id=$("#examId").val();
+			    						var subjectId=$("#subjectId").val();
+			    						window.location.href="/examController/reExaminationList?id="+id+"&subjectId="+subjectId;
+			    					}else{
+			    						var userId=$("#userId").val();
+			    						window.location.href = '/examController/examineeExamList?userId='+userId;
+			    					}
+			    			   }
+				    		});
+    					}
+    				}else if(result.code == 3000){
+						clearInterval(interval);
+						layer.close(indexs);
+						layer.msg(result.data, {icon : 2, time : 1500}, function(){
+							flags = false;
+	        				var allowResubmit=$('#allowResubmit').val();
+	        				if(allowResubmit==1){
+	        					var id=$("#examId").val();
+	        					var subjectId=$("#subjectId").val();
+	        					window.location.href="/examController/reExaminationList?id="+id+"&subjectId="+subjectId;
+	        				}else{
+	        					var userId=$("#userId").val();
+	        					window.location.href = '/examController/examineeExamList?userId='+userId;
+	        				}
+	        			});
+					}else{
+						clearInterval(interval);
+						clearInterval(timer);
+						layer.close(indexs);
+						layer.msg(result.data, {icon : 2, time : 1500}, function(){
+							flags = false;
+	        			});
+					}
+    			},
+    			error:function (result){
+    				clearInterval(interval);
+    				clearInterval(timer);
+    				layer.close(indexs);
+    				layer.msg(result.data, {icon : 2, time : 1500}, function(){
+    					flags = false;
+        			});
+    			},
+    			//ajax请求之前
+    			beforeSend: function () {
+    				indexs = layer.msg('请耐心等待,正在提交...', {icon: 16,shade: 0.3, time:100000000});
+    		    }
+    		});
+			 
+		}
+		// 获取客观题和主观题答案串并自动阅卷(客观题)
+		function  getSubjectAndObjectAnswerInfo(){
+			objectiveMark=0;
+			// 遍历组客观题json串并计算总分数
+			var allStr={};
+			var objStr={};
+			var subStr={};
+			for(var i = 0; i < paperTemplateInfo.length; i++){
+				var questionTypeId = paperTemplateInfo[i].questionTypeId;
+				var questionDTOList=paperTemplateInfo[i].questionDTOList;
+				var perQuestionMark= paperTemplateInfo[i].perQuestionMark;//每题目分数
+				if(questionTypeId==1 || questionTypeId==2 || questionTypeId==3 || questionTypeId==4){
+					if(questionTypeId==1|| questionTypeId==3 ){
+						for(var j=0;j<questionDTOList.length;j++){
+							var optionId = "";
+							var obj=$('.list .item .question'+questionDTOList[j].id);
+							$(obj).find("input").each(function(k){
+								if($(this).is(":checked")){
+									optionId=$(this).val()
+						         }
+				    	     });
+				    	     var arr={};
+			    	     	 arr.useranswer=optionId;
+				    	     //计算分数
+				    	     var qscore=questionScore(questionDTOList[j],arr.useranswer,perQuestionMark);
+				    	     arr.score=qscore;
+				    	     objStr[questionDTOList[j].id]=arr;
+						}
+					}else  if(questionTypeId==2){
+						for(var j=0;j<questionDTOList.length;j++){
+							var optionId = [];
+							var obj=$('.list .item .question'+questionDTOList[j].id);
+							$(obj).find("input").each(function(k){
+								if($(this).is(":checked")){
+						        	 optionId.push($(this).val());
+						         }
+				    	     });
+				    	     var optionStr = optionId.join('|');
+				    	     var arr={};
+				    	     if(optionId.length>0){
+				    	     	arr.useranswer=optionStr;
+				    	     }else{
+				    	     	arr.useranswer="";
+				    	     }
+				    	     var qscore=questionScore(questionDTOList[j],arr.useranswer,perQuestionMark);
+				    	     arr.score=qscore;
+				    	     objStr[questionDTOList[j].id]=arr;
+						}
+					}else if(questionTypeId==4){
+						for(var j=0;j<questionDTOList.length;j++){
+							var tkStr = '';
+							var obj=$('.list .item .question'+questionDTOList[j].id);
+							$(obj).find("input").each(function(k){
+								var strVal=$.trim($(this).val());
+								if(strVal==''){
+									 if(tkStr == ''){
+										 tkStr += '___';
+									 }else{
+										 tkStr += '||___';
+									 }
+								 }else{
+									 if(tkStr == ''){
+										 tkStr += strVal;
+									 }else{
+										 tkStr += '||'+strVal;
+									 }
+								 }
+				    	     });
+				    	     var arr={};
+				    	     arr.useranswer=tkStr;
+				    	     var qscore=questionScore(questionDTOList[j],arr.useranswer,perQuestionMark);
+				    	     arr.score=qscore;
+				    	     objStr[questionDTOList[j].id]=arr;
+						}
+					}
+					
+				}else{
+					for(var j=0;j<questionDTOList.length;j++){
+							var tkStr = '';
+							var obj=$('.list .item .question'+questionDTOList[j].id);
+							$(obj).find("textarea").each(function(k){
+								if($(this).val() == ''){
+									 tkStr += '';
+								 }else{
+									 tkStr += $(this).val();
+								 }
+				    	     });
+				    	     var arr={};
+				    	     arr.useranswer=tkStr;
+				    	     arr.score="";
+				    	     subStr[questionDTOList[j].id]=arr;
+				    	     qscore=questionScore(questionDTOList[j],arr.useranswer,perQuestionMark);
+					}
+					
+				}
+			}
+			allStr.objectiveAnswerJson=JSON.stringify(objStr);
+			allStr.subjectAnswerJson=JSON.stringify(subStr);
+			return  allStr;
+		}
+		 
+		 
+	 //试题分数处理  单选、多选、判断、填空  objectiveMark   perQuestionMark
+     function questionScore(data, userAnswer,perQuestionMark){
+    	 var score = 0;
+    	 var subScore = 0;
+    	 var options =data.questionOptions;
+    	 switch(data.questionTypeId){
+			 case 1:
+			 	 score = 0;
+				 for(var i = 0; i < options.length; i++){
+					 if(options[i].isRight == 1 && options[i].id == userAnswer){
+						 score = score + perQuestionMark;
+					 }
+				 }
+			   break;
+			 case 2:
+			 	 score = 0;
+				 var flag = 0;
+				 var optionArr = [];
+				 for(var i = 0; i < options.length; i++){
+					 if(options[i].isRight == 1){
+						 optionArr.push(options[i].id)
+					 }
+				 }
+				 var duoxuan = userAnswer.split('|')
+				 if(duoxuan.length != optionArr.length){
+					 flag++;
+				 }else{
+					 for(var j = 0; j < duoxuan.length; j++){
+						 if(contains(optionArr, duoxuan[j]) == false){
+							 flag++;
+						 }
+					 }
+				 }
+				 if(flag == 0){
+					 score = score + perQuestionMark;
+				 }
+			   break;
+			 case 3:
+			 	 score = 0;
+				 for(var i = 0; i < options.length; i++){
+					 if(options[i].isRight == 1 && options[i].id == userAnswer){
+						 score = score + perQuestionMark
+					 }
+				 }
+			   break;
+			 case 4:
+			 	 score = 0;
+				 var flag = 0;
+				 var rightAnswer = data.rightAnswer.split('||');
+				 var tk = userAnswer.split('||');
+				 for(var i = 0; i < rightAnswer.length; i++){
+					 var tkArr = replaceStringText(rightAnswer[i]).split(';');
+			    	 if(containString(tkArr, tk[i]) == false){
+			    		 flag++;
+					 }
+				 }
+				 score = score + Number(((rightAnswer.length - flag)*(perQuestionMark/rightAnswer.length)).toFixed(2));
+			   break;
+			 case 5:
+			 	 subScore = 0;
+			 	 
+    			 $.ajaxSettings.async = false;
+	 			 $.post('/answerPaperController/intelligentMarking',{str1 : data.rightAnswer, str2:userAnswer},function(result){
+		             if(result.code == 2000){
+		              	 subScore=result.data*perQuestionMark;
+		             }else{
+					 	layer.alert('系统错误(智能批阅简答题失败)，请联系管理员!',{icon: 2,closeBtn: 0 });
+						return;
+					 }
+			 	});
+			   break;
+			 case 6:
+			 	 subScore = 0;
+    			 $.ajaxSettings.async = false;
+				 $.post('/answerPaperController/intelligentMarking',{str1 : data.rightAnswer, str2:userAnswer},function(result){
+		             if(result.code == 2000){
+		              	 subScore=result.data*perQuestionMark;
+		             }else{
+					 	layer.alert('系统错误(智能批阅编程题失败)，请联系管理员!',{icon: 2,closeBtn: 0 });
+						return;
+					 }
+			 	});
+			   break;
+		 }
+		 objectiveMark+=score;
+		 subjectiveMark+=subScore;
+    	 return score;
+     }
+      
+     //返回
+	function callback(){
+		var allowResubmit=$('#allowResubmit').val();
+		if(allowResubmit==1){
+			var id=$("#examId").val();
+			var subjectId=$("#subjectId").val();
+			window.location.href="/examController/reExaminationList?id="+id+"&subjectId="+subjectId;
+		}else{
+			var userId=$("#userId").val();
+			window.location.href = '/examController/examineeExamList?userId='+userId;
+		}
+	}
+		
+     
+		 
+	 //判断数组中是否存在某一值(数字情况)
+     function contains(arr, obj) {  
+    	    var i = arr.length;  
+    	    while (i--) {  
+    	        if (arr[i] == parseInt(obj)) {  
+    	            return true;  
+    	        }  
+    	    }  
+    	    return false;  
+     }
+     	 
+	//正则替换特殊字符   获取{{啊啊啊啊}}-------啊啊啊啊
+ 	function replaceStringText(str){
+ 		var result =str.replace('{{','').replace('}}','');
+ 		return result;
+ 	}	 
+		 
+	 //判断数组中是否存在某一值(字符串)
+     function containString(arr, obj) {  
+    	    var i = arr.length;  
+    	    while (i--) {  
+    	        if ($.trim(arr[i]) == $.trim(obj)) {  
+    	            return true;  
+    	        }  
+    	    }  
+    	    return false;  
+     }	
+     
+     
+	// 数字转大写字母
+	function getChar(i){
+        if(i >= 0 && i <= 26){
+            return String.fromCharCode(65 + i);
+        } else {
+            alert('请输入合适数字');
+        }
+    } 
+    
+    //位数补充
+     function supplement(num){
+    	 if(num < 10){
+    		 return '0'+num;
+    	 }else{
+    		 return num;
+    	 }
+     }

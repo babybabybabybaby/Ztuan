@@ -1,0 +1,1 @@
+var eleHeight=$("#fix").offset().top;$(document).scroll(function(){var e=$(document).scrollTop();eleHeight<=e?$("#fix").addClass("fixs"):$("#fix").removeClass("fixs")});
